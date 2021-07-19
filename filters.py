@@ -38,6 +38,7 @@ class AttributeFilter:
     Concrete subclasses can override the `get` classmethod to provide custom
     behavior to fetch a desired attribute from the given `CloseApproach`.
     """
+
     def __init__(self, op, value):
         """Construct a new `AttributeFilter` from an binary predicate and a reference value.
 
@@ -70,6 +71,36 @@ class AttributeFilter:
 
     def __repr__(self):
         return f"{self.__class__.__name__}(op=operator.{self.op.__name__}, value={self.value})"
+
+
+class DateFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.time.date()
+
+
+class DistanceFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.distance
+
+
+class VelocityFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.velocity
+
+
+class DiameterFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.diameter
+
+
+class HazardousFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.hazardous
 
 
 def create_filters(date=None, start_date=None, end_date=None,
@@ -106,8 +137,39 @@ def create_filters(date=None, start_date=None, end_date=None,
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
-    return ()
+
+    args = [date, start_date, end_date, distance_min, distance_max,
+            velocity_min, velocity_max, diameter_min, diameter_max, hazardous]
+    args_not_none = list(filter(lambda x: x != None, args))
+    if not any(args_not_none):
+        return None
+
+    filterDateEqual = DateFilter(operator.eq, date)
+    filterDateGe = DateFilter(operator.ge, start_date)
+    filterDateLe = DateFilter(operator.le, end_date)
+    filterDistanceGe = DistanceFilter(operator.ge, distance_min)
+    filterDistanceLe = DistanceFilter(operator.le, distance_max)
+    filterVelocityGe = VelocityFilter(operator.ge, velocity_min)
+    filterVelocityLe = VelocityFilter(operator.le, velocity_max)
+    filterDiameterGe = DiameterFilter(operator.ge, diameter_min)
+    filterDiameterLe = DiameterFilter(operator.le, diameter_max)
+    filterHazardous = HazardousFilter(operator.eq, hazardous)
+
+    filters = [filterDateEqual,
+               filterDateGe,
+               filterDateLe,
+               filterDistanceGe,
+               filterDistanceLe,
+               filterVelocityGe,
+               filterVelocityLe,
+               filterDiameterGe,
+               filterDiameterLe,
+               filterHazardous]
+    mapped_filters = list(
+        map(lambda arg, filter: filter if arg != None else None, args, filters))
+    filters_not_none = list(filter(lambda x: x != None, mapped_filters))
+
+    return filters_not_none
 
 
 def limit(iterator, n=None):
