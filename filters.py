@@ -142,7 +142,7 @@ def create_filters(date=None, start_date=None, end_date=None,
     args = [date, start_date, end_date, distance_min, distance_max,
             velocity_min, velocity_max, diameter_min, diameter_max, hazardous]
     args_not_none = list(filter(lambda x: x != None, args))
-    if not any(args_not_none):
+    if len(args_not_none) == 0:
         return None
 
     filterDateEqual = DateFilter(operator.eq, date)
