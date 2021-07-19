@@ -48,7 +48,10 @@ class NearEarthObject:
     def fullname(self):
         """Return a representation of the full name of this NEO."""
         name = '(' + self.name + ')' if self.name else ''
-        return f"{self.designation} {name}"
+        return f"{self.designation}{name}"
+
+    def add_approach(self, approach):
+        self.approaches.append(approach)
 
     def __str__(self):
         """Return `str(self)`."""
@@ -101,6 +104,10 @@ class CloseApproach:
         in serialization to CSV and JSON files.
         """
         return datetime_to_str(self.time)
+
+    def set_neo(self, neo=None):
+        if neo != None:
+            self.neo = neo
 
     def __str__(self):
         """Return `str(self)`."""

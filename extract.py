@@ -27,10 +27,9 @@ def load_neos(neo_csv_path):
     neos = []
     with open(neo_csv_path, mode='r') as file:
         csv_reader = csv.DictReader(file)
-        next(csv_reader)
         for row in csv_reader:
             pdes = row["pdes"]
-            name = row["name"]
+            name = row["name"] if len(row["name"]) > 0 else None
             diameter = float(row["diameter"]) if len(
                 row["diameter"]) > 0 else float('nan')
             pha = row["pha"] == 'Y'
