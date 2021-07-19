@@ -51,6 +51,7 @@ class NearEarthObject:
         return f"{self.designation}{name}"
 
     def add_approach(self, approach):
+        """Add a new approach to self.approaches."""
         self.approaches.append(approach)
 
     def __str__(self):
@@ -106,6 +107,7 @@ class CloseApproach:
         return datetime_to_str(self.time)
 
     def set_neo(self, neo=None):
+        """Set self.neo attribute."""
         if neo != None:
             self.neo = neo
 
